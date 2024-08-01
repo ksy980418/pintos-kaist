@@ -40,15 +40,15 @@
 
 #include "threads/loader.h"
 	
-#### Kernel loader.
+# Kernel loader.
 
-#### This code should be stored in the first sector of the hard disk.
-#### When the BIOS runs, it loads this code at physical address
-#### 0x7c00-0x7e00 (512 bytes).  Then it jumps to the beginning of it,
-#### in real mode.  This code switches into protected mode (32-bit
-#### mode) so that all of memory can accessed, loads the kernel into
-#### memory, and jumps to the first byte of the kernel, where start.S
-#### is linked.
+# This code should be stored in the first sector of the hard disk.
+# When the BIOS runs, it loads this code at physical address
+# 0x7c00-0x7e00 (512 bytes).  Then it jumps to the beginning of it,
+# in real mode.  This code switches into protected mode (32-bit
+# mode) so that all of memory can accessed, loads the kernel into
+# memory, and jumps to the first byte of the kernel, where start.S
+# is linked.
 	
 /* Flags in control register 0. */
 #define CR0_PE 0x00000001      /* Protection Enable. */
@@ -84,9 +84,9 @@ start:
 	movw %ax, %ss
 	movw $0x7c00, %sp
 	
-#### Enable A20.  Address line 20 is tied to low when the machine
-#### boots, which prevents addressing memory about 1 MB.  This code
-#### fixes it.
+# Enable A20.  Address line 20 is tied to low when the machine
+# boots, which prevents addressing memory about 1 MB.  This code
+# fixes it.
 	
 # Poll status register while busy.
 
@@ -111,9 +111,9 @@ start:
 	outb %al, $0x60
 
 
-#### Get memory size, via interrupt 15h function e820h. Now our pintos
-#### runs on x86_64, "Get Extended Memory Size" operation is not sufficient
-#### for our purpose.
+# Get memory size, via interrupt 15h function e820h. Now our pintos
+# runs on x86_64, "Get Extended Memory Size" operation is not sufficient
+# for our purpose.
 	mov $0xe820, %eax  # command
 	mov $(E820_MAP4), %edi  # dst
 	xor %ebx, %ebx
@@ -142,7 +142,7 @@ e820_parse_done:
 	movl %ebp, MULTIBOOT_MMAP_LEN
 	movl $(E820_MAP), MULTIBOOT_MMAP_ADDR # e820
 
-#### Switch to protected mode.
+# Switch to protected mode.
 
 # Note that interrupts are still off.
 
@@ -188,8 +188,8 @@ protcseg:
 	movw %ax, %ss
 	movl $LOADER_PHYS_BASE + 0x30000, %esp
 
-#### Load kernel starting at physical address LOADER_PHYS_BASE by
-#### frobbing the IDE controller directly.
+# Load kernel starting at physical address LOADER_PHYS_BASE by
+# frobbing the IDE controller directly.
 
 	movl $1, %ebx
 	movl $LOADER_PHYS_BASE, %edi
@@ -264,12 +264,12 @@ read_sector:
 	cmpl $KERNEL_LOAD_PAGES*8 + 1, %ebx
 	jnz read_sector
 
-#### Jump to kernel entry point.
+# Jump to kernel entry point.
 	movl $LOADER_PHYS_BASE, %eax
 	call *%eax
 	jmp panic
 
-#### GDT
+# GDT
 
 gdt:
 	.quad 0x0000000000000000	# null seg
@@ -280,8 +280,8 @@ gdtdesc:
 	.word	0x17			# sizeof (gdt) - 1
 	.long	gdt
 
-#### Fatal error.
-#### Print panic_message (with help from the BIOS) and spin.
+# Fatal error.
+# Print panic_message (with help from the BIOS) and spin.
 
 panic:  .code16			# We only panic in real mode.
 	movw $panic_message, %si
@@ -297,9 +297,9 @@ panic_message:
 	.ascii "Panic!"
 	.byte 0
 
-#### Command-line arguments and their count.
-#### This is written by the `pintos' utility and read by the kernel.
-#### The loader itself does not do anything with the command line.
+# Command-line arguments and their count.
+# This is written by the `pintos' utility and read by the kernel.
+# The loader itself does not do anything with the command line.
 	.org LOADER_ARG_CNT - LOADER_BASE
 arg_cnt:
 	.long 0
@@ -307,7 +307,7 @@ arg_cnt:
 args:
 	.fill 0x80, 1, 0
 
-#### Boot-sector signature.
-#### The BIOS checks that this is set properly.
+# Boot-sector signature.
+# The BIOS checks that this is set properly.
 	.org LOADER_SIG - LOADER_BASE
 	.word 0xaa55

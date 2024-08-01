@@ -17,7 +17,7 @@ _start = RELOC(bootstrap)
 .globl bootstrap
 .func bootstrap
 .code32
-#### bootstrap to the 64bit code.
+# bootstrap to the 64bit code.
 bootstrap:
 	pushf
 	pop %eax
@@ -32,14 +32,14 @@ bootstrap:
 	cmp $1, %eax
 	jb no_long_mode
 	test $LONG_MODE, %edx
-#### Enable Physical Address Extension
+# Enable Physical Address Extension
 	movl %cr4, %eax
 	orl $CR4_PAE, %eax
 	movl %eax, %cr4
 
 
-#### Create page directory and page table and
-#### set page directory base register (cr3).
+# Create page directory and page table and
+# set page directory base register (cr3).
 setup_page_table:
 # 1. fill boot_pml4e with zeros
   lea (RELOC(boot_pml4e)), %edi
@@ -88,19 +88,19 @@ fill_pdes:
 	lea (RELOC(boot_pml4e)), %eax
 	mov %eax, %cr3
 
-#### Enable the long mode using MSR (Model Specific Register)
-#### Enable syscall (EFER_SCE)
+# Enable the long mode using MSR (Model Specific Register)
+# Enable syscall (EFER_SCE)
 	mov $EFER_MSR, %ecx
 	rdmsr
 	orl $(EFER_LME | EFER_SCE), %eax
 	wrmsr
 
-#### Enable paging
+# Enable paging
 	mov %cr0, %eax
 	or $(CR0_PE|CR0_PG), %eax
 	mov %eax, %cr0
 
-#### Jump to the long mode
+# Jump to the long mode
 	lea (RELOC(gdt_desc64)), %eax
 	lgdt (%eax)
 	mov $(entry_64 - LOADER_KERN_BASE), %eax
@@ -144,7 +144,7 @@ boot_pde2:
 .globl entry_64
 .func entry_64
 entry_64:
-	#### We will use 0 ~ 0x1000 as boot stack.
+	# We will use 0 ~ 0x1000 as boot stack.
 	xor %rbp, %rbp
 	movabs $(LOADER_KERN_BASE + 0x1000), %rsp
 	movabs $main, %rax
